@@ -42,35 +42,64 @@ function playRound(playerSelection, computerSelection) {
     }
 }
 
-let capitalize = string => string[0].toUpperCase() + string.slice(1).toLowerCase();
-
 function game() {
-    let results = [0,0,0];
-    for(let i = 0; i < 5; i++) {
-        let playerSelection = capitalize(prompt("Rock, Paper, or Scissors: "));
-        let computerSelection = computerPlay();
-        let roundResult = playRound(playerSelection, computerSelection);
 
-        if (roundResult === "win") {
-            console.log("You Win! " + playerSelection + " beats " + computerSelection);
-            results[0]++;
+    if (games === 0) {
+        newGame.disabled = false;
+    }
+
+    let playerSelection = this.getAttribute('id');
+    let computerSelection = computerPlay();
+    let roundResult = playRound(playerSelection, computerSelection);
+
+    if (roundResult === "win") {
+        results.textContent = "You Win! " + playerSelection + " beats " + computerSelection;
+        wins.textContent = parseInt(wins.textContent) + 1;
+    }
+    else if (roundResult === "lose") {
+        results.textContent = "You Lose! " + computerSelection + " beats " + playerSelection;
+        loses.textContent = parseInt(loses.textContent) + 1;
+    }
+    else {
+        results.textContent = "It's a Tie! You both chose " + playerSelection;
+        ties.textContent = parseInt(ties.textContent) + 1;
+    }
+    games++;
+
+    if (games >= 5) {
+        buttons.forEach(button => button.disabled = true);
+        games = 0;
+        if (wins.textContent > loses.textContent) {
+            gameResult.textContent = "YOU WON!";
         }
-        else if (roundResult === "lose") {
-            console.log("You Lose! " + computerSelection + " beats " + playerSelection);
-            results[1]++;
-        }
-        else if (roundResult === "tie") {
-            console.log("It's a Tie! You both chose " + playerSelection);
-            results[2]++;
+        else if (wins.textContent < loses.textContent) {
+            gameResult.textContent = "YOU LOSE!";
         }
         else {
-            console.log("You Lose! " + playerSelection + " is not a choice.");
-            results[1]++;
+            gameResult.textContent = "IT'S A TIE!";
         }
     }
-    console.log("Wins: " + results[0]);
-    console.log("Losses: " + results[1]);
-    console.log("Ties: " + results[2]);
 }
-game();
 
+
+const buttons = document.querySelectorAll('.choices button');
+const results = document.querySelector('#round-result');
+const wins = document.querySelector('#wins');
+const loses = document.querySelector('#loses');
+const ties = document.querySelector('#ties');
+const gameResult = document.querySelector('#game-result');
+let games = 0;
+
+const newGame = document.querySelector('#new-game');
+newGame.addEventListener('click', function (e) {
+    buttons.forEach(button => button.disabled = false);
+    wins.textContent = 0;
+    loses.textContent = 0;
+    ties.textContent = 0;
+    games = 0;
+    this.setAttribute('disabled', true);
+    results.textContent = '\u00A0';
+    gameResult.textContent = '\u00A0';
+});
+
+buttons.forEach(button => button.addEventListener('click', game));
